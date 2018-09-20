@@ -1,10 +1,17 @@
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+
 <h3>
     Messages App
-    <button onclick="clearMessages()">
-        Clear Messages
-    </button>
 </h3>
+
+<button onclick="clearMessages()" type="button" class="btn btn-danger">
+    Clear Messages
+</button>
+<p>&nbsp;</p>
 <div>
     <!-- TODO ADD AN ATTRIBUTE THAT focuses the CURSOR INTO THE TEXTAREA ELEMENT WHEN THE PAGE LOADS -->
     <textarea 
@@ -15,7 +22,7 @@
         type="text"
         style="margin-bottom: 15px;"> 
     </textarea>
-    <button onclick="addPlainMessage()">
+    <button onclick="addPlainMessage()" type="button" class="btn btn-success">
         Enter
     </button>
 </div>
@@ -216,8 +223,9 @@
     }
 
     function initConstantTimeNameFileter() {
+        //NOTE: This works with EXACTLY three characters only
         
-        nameDictionary = {}; //Global
+        nameDictionary = {}; //Global, perhaps not best practice to declare here
         
         for (let userName of userNames) {
 
@@ -236,7 +244,6 @@
             addStrToDict(userName.firstName);
             addStrToDict(userName.lastName);
         }
-        console.log(nameDictionary);
 
     }
     function constantTimeNameFilter(userText) {
@@ -335,6 +342,7 @@
         if (firstChar === '@') {
             console.log('filter names ...');
             const filteredNames = filterNames(userText); 
+            //const filteredNames = constantTimeNameFilter(userText);
             initFilteredNames(filteredNames);
         } else {
             console.log('MISSING @ IN USER TEXT');
@@ -346,7 +354,7 @@
             'input',
             debounce(
                 searchNames,
-                2000
+                1500
             )
         );
         initDocument();
