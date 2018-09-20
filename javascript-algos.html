@@ -34,6 +34,7 @@
         clearNames();
         initUsersNames();
         initMessages();
+        initConstantTimeNameFileter();
     }
 
     function initUsersNames() {
@@ -59,6 +60,13 @@
     }
 
     function clearMessages() {
+        var messagesContainer = document.getElementById('messagesContainer');
+        if (messagesContainer) {
+            while (messagesContainer.hasChildNodes()) {
+                messagesContainer.removeChild(messagesContainer.lastChild);
+            }
+        }
+
         /*TODO CLEAR MESSAGES FROM DOCUMENT WHEN USER CLICKS THE [CLEAR MESSAGES] BUTTON */
         /* EXTRA CREDIT INCLUDE A SCRIPT TAG THATS FETCHES BOOTSTRAP CSS STLYINGS AND STYLE THE BUTTONS */
     }
@@ -82,8 +90,14 @@
         handleSpan.appendChild(handleText);
         // TODO:: EXCLUDING THE ORIGINALLY TYPED USER NAME REPLACE THIS TEXT \
         //        WITH ANY ADDITIONAL USER TEXT FROM THE ORIGIN USER TEXT MESSAGE
-        var dummyText = 'TODO:: EXCLUDING THE ORIGINALLY TYPED USER NAME REPLACE THIS TEXT \
-                         WITH ANY ADDITIONAL USER TEXT FROM THE ORIGIN USER TEXT MESSAGE';
+        
+        //matches @ at beginning of input followed by zero or more
+        //alphanumeric characters 
+        var userNameFilter = /^@\w*/;
+
+        // trims leading and trailing white space and replaces using above filter
+        var dummyText = getUserText().trim().replace(userNameFilter,'');
+        
         var messageText = document.createTextNode(`${dummyText} `);
         messageDiv.appendChild(handleSpan);
         messageDiv.appendChild(messageText);
@@ -93,8 +107,8 @@
         clearUserInput();
     }
     
-    //TODO SET THE FLAG TO FALS ONCE YOU UNDERSTAND THE ASSIGNMENT
-    const instructionsFlag = true;
+    //TODO SET THE FLAG TO FALSE ONCE YOU UNDERSTAND THE ASSIGNMENT
+    const instructionsFlag = false;
     if (instructionsFlag) {
         console.log(`README`);
         console.log(`
@@ -131,6 +145,61 @@
             firstName: 'Horace',
             lastName: 'Grant',
             handle: '@HGrant'
+        },
+        {
+            firstName: 'Darron',
+            lastName: 'McNutt',
+            handle: '@DMcNutt'
+        },
+        {
+            firstName: 'Kathleen',
+            lastName: 'McNutt',
+            handle: '@KMcNutt'
+        },
+        {
+            firstName: 'Rosie',
+            lastName: 'McMutt',
+            handle: '@RosieDawg'
+        },
+        {
+            firstName: 'Andrew',
+            lastName: 'Rubin',
+            handle: '@AndyAndroid'
+        },
+        {
+            firstName: 'Linus',
+            lastName: 'Torvalds',
+            handle: '@PenguinMan'
+        },
+        {
+            firstName: 'Johann',
+            lastName: 'Bach',
+            handle: '@RealJSB'
+        },
+        {
+            firstName: 'Fred',
+            lastName: 'Chopin',
+            handle: '@PianoMan'
+        },
+        {
+            firstName: 'Cannonball',
+            lastName: 'Adderley',
+            handle: '@SaxMan'
+        },
+        {
+            firstName: 'Rick',
+            lastName: 'Astley',
+            handle: '@RollinRick'
+        },
+        {
+            firstName: 'Jesus',
+            lastName: 'Christ',
+            handle: '@RealJeezyCreezy'
+        },
+        {
+            firstName: 'Barbara',
+            lastName: 'Barbarbaran',
+            handle: '@Barb'
         }
     ];
 
@@ -147,11 +216,38 @@
     }
 
     function initConstantTimeNameFileter() {
-        /* EXTRA CREDIT */
+        
+        nameDictionary = {}; //Global
+        
+        for (let userName of userNames) {
+
+            let addStrToDict = (str) => {
+                for (let i = 0; i < str.length - 3; i++) {
+                    let slice = str.slice(i,i+3).toLowerCase();
+                    if(nameDictionary.hasOwnProperty(slice)) {
+                        if (!nameDictionary[slice].includes(userName)) {
+                            nameDictionary[slice].push(userName); 
+                        }
+                     } else {
+                        nameDictionary[slice] = [userName];
+                    }
+                }
+            }
+            addStrToDict(userName.firstName);
+            addStrToDict(userName.lastName);
+        }
+        console.log(nameDictionary);
+
     }
     function constantTimeNameFilter(userText) {
         /* EXTRA CREDIT :: CONVERT filterNames FUNCTION TO DO CONSTANT TIME LOOK UP.  
         THIS WILL REQUIRE initConstantTimeNameFileter ON PAGE LOAD AS WELL */
+        const firstThreeChars = userText.toLowerCase().slice(1,4);
+        if (nameDictionary.hasOwnProperty(firstThreeChars)) {
+            return nameDictionary[firstThreeChars];
+        } else {
+            return [];
+        }
     }
 
     function filterNames(userText) {
@@ -185,6 +281,7 @@
             nameElm.setAttribute('class', 'filtered-name');
             var text = document.createTextNode(`${name.firstName} ${name.lastName}`);
             nameElm.appendChild(text);
+            nameElm.addEventListener("click", () => { addHandleMessage(name.handle) });
             namesContainer.appendChild(nameElm);
             
             /* 
@@ -237,7 +334,7 @@
         const firstChar = userText[0] || '';
         if (firstChar === '@') {
             console.log('filter names ...');
-            const filteredNames = filterNames(userText);
+            const filteredNames = filterNames(userText); 
             initFilteredNames(filteredNames);
         } else {
             console.log('MISSING @ IN USER TEXT');
@@ -249,7 +346,7 @@
             'input',
             debounce(
                 searchNames,
-                20000
+                2000
             )
         );
         initDocument();
