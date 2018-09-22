@@ -1,3 +1,4 @@
+<!-- EXTRA CREDIT: BOOTSTRAP CSS-->
 <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
@@ -102,8 +103,8 @@
         //alphanumeric characters 
         var userNameFilter = /^@\w*/;
 
-        // trims leading and trailing white space and replaces using above filter
-        var dummyText = getUserText().trim().replace(userNameFilter,'');
+        // replaces using above filter
+        var dummyText = getUserText().replace(userNameFilter,'');
         
         var messageText = document.createTextNode(`${dummyText} `);
         messageDiv.appendChild(handleSpan);
@@ -225,25 +226,27 @@
     function initConstantTimeNameFileter() {
         //NOTE: This works with EXACTLY three characters only
         
-        nameDictionary = {}; //Global, perhaps not best practice to declare here
+        nameDictionary = {}; //Global variable, perhaps not best practice to declare here
         
-        for (let userName of userNames) {
-
-            let addStrToDict = (str) => {
-                for (let i = 0; i < str.length - 3; i++) {
-                    let slice = str.slice(i,i+3).toLowerCase();
+        let addStrToDict = function(userObj, nameStr) {
+            for (let i = 0; i < nameStr.length - 2; i++) {
+                    let slice = nameStr.slice(i,i+3).toLowerCase();
                     if(nameDictionary.hasOwnProperty(slice)) {
-                        if (!nameDictionary[slice].includes(userName)) {
-                            nameDictionary[slice].push(userName); 
+                        if (!nameDictionary[slice].includes(userObj)) {
+                            nameDictionary[slice].push(userObj); 
                         }
                      } else {
-                        nameDictionary[slice] = [userName];
+                        nameDictionary[slice] = [userObj];
                     }
                 }
-            }
-            addStrToDict(userName.firstName);
-            addStrToDict(userName.lastName);
         }
+
+        for (let userName of userNames) {
+            addStrToDict(userName, userName.firstName);
+            addStrToDict(userName, userName.lastName);
+        }
+        //FOR DEBUGGING
+        //console.log(nameDictionary);
 
     }
     function constantTimeNameFilter(userText) {
@@ -341,7 +344,11 @@
         const firstChar = userText[0] || '';
         if (firstChar === '@') {
             console.log('filter names ...');
+
+            //COMMENT OUT LINE BELOW FOR EXTRA CREDIT
             const filteredNames = filterNames(userText); 
+
+            //UNCOMMENT LINE BELOW FOR EXTRA CREDIT
             //const filteredNames = constantTimeNameFilter(userText);
             initFilteredNames(filteredNames);
         } else {
